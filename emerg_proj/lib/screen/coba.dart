@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:emerg_proj/class/questionBank.dart';
 
+String _username = "";
+late int _score;
+
 class GameScreen extends StatefulWidget {
   @override
   _GameScreenState createState() => _GameScreenState();
@@ -13,7 +16,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   late int _currentRound;
   late int _secondsRemaining;
-  late int _score;
+  // late int _score;
   List<QuestionBank> _questions = [
     QuestionBank(
       "https://picsum.photos/id/237/200/300",
@@ -138,10 +141,17 @@ class _GameScreenState extends State<GameScreen> {
 
   void _saveScore() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? username = prefs.getString('user_id');
     int? highScore = prefs.getInt('highScore') ?? 0;
-    if (_score > highScore) {
-      prefs.setInt('highScore', _score);
+    if (username != null) {
+      _username = username;
     }
+    // if (_score > highScore) {
+    //   prefs.setString('lastUsername', _username);
+    //   prefs.setInt('highScore', _score);
+    // }
+    prefs.setString('lastUsername', _username);
+    prefs.setInt('highScore', _score);
     // Navigate to results screen or do any other actions
   }
 

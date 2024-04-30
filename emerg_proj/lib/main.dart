@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 //global var
 String active_user = "";
+
 //
 void doLogout() async {
     final prefs = await SharedPreferences.getInstance();

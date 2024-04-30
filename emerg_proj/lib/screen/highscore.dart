@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 late Map<String, dynamic> _point;
 bool _isLoading = true;
 
@@ -19,7 +20,8 @@ class HighScore extends StatefulWidget {
 }
 
 class _HighScoreState extends State<HighScore> {
-   @override
+  List<Map<String, dynamic>> _leaderboard = [];
+  @override
   void initState() {
     super.initState();
     checkPoint().then((value) {
@@ -29,12 +31,17 @@ class _HighScoreState extends State<HighScore> {
       });
     });
   }
-  Future<Map<String,dynamic>> checkPoint() async {
+
+  Future<Map<String, dynamic>> checkPoint() async {
     final prefs = await SharedPreferences.getInstance();
-    final user = prefs.getString('user') ?? "";
-    final point = prefs.getInt('point') ?? 0;
-    return {'user':user, 'point':point};
-    }
+    final user = prefs.getString('lastUsername') ?? "";
+    final point = prefs.getInt('highScore') ?? 0;
+    setState(() {
+      _leaderboard.add({'user': user, 'point': point});
+    });
+    return {'user': user, 'point': point};
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,19 +51,28 @@ class _HighScoreState extends State<HighScore> {
       body: Center(
         child: _isLoading
             ? CircularProgressIndicator()
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Top User: ${_point['user']}',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Top Point: ${_point['point']}',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ],
+            : SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: [
+                    DataColumn(
+                      label: Text("Name"),
+                    ),
+                    DataColumn(
+                      label: Text("High Score"),
+                    ),
+                  ],
+                  rows: _leaderboard
+                      .map(
+                        (score) => DataRow(
+                          cells: [
+                            DataCell(Text(score['user'])),
+                            DataCell(Text(score['point'].toString())),
+                          ],
+                        ),
+                      )
+                      .toList(),
+                ),
               ),
       ),
     );
