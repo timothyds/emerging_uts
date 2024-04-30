@@ -1,5 +1,6 @@
 import 'package:emerg_proj/screen/game.dart';
 import 'package:emerg_proj/screen/highscore.dart';
+import 'package:emerg_proj/screen/layar.dart';
 import 'package:emerg_proj/screen/login.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,20 +75,21 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'Instruksi',
+              'Selamat datang di game Memorimage!!',
               textAlign: TextAlign.center,
-              
+              style: TextStyle(fontSize: 24),
             ),
             Text(
-              'Selamat datang di game Memorimage. Lihat dan ingat setiap gambar selama 3 detik lalu tebak gambar yang benar',
+              'Lihat dan ingat setiap gambar selama 3 detik lalu tebak gambar yang benar',
               textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Quiz()),
+                  MaterialPageRoute(builder: (context) => GameScreen()),
                 );
               },
               child: Text('Play Game'),
