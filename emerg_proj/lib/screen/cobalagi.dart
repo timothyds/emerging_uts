@@ -126,9 +126,13 @@ class _GameScreenState extends State<GameScreen> {
     await prefs.setInt('highScore', _score);
     await prefs.setInt('correctAnswerCount', _correctAnswerCount);
     Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => Result(score: _score,correctAnswers: _correctAnswerCount,)),
-  );
+      context,
+      MaterialPageRoute(
+          builder: (context) => Result(
+                score: _score,
+                correctAnswers: _correctAnswerCount,
+              )),
+    );
   }
 
   @override
@@ -172,8 +176,7 @@ class _GameScreenState extends State<GameScreen> {
                                   ),
                                   SizedBox(height: 20),
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       ElevatedButton(
                                         onPressed: () {
@@ -208,8 +211,7 @@ class _GameScreenState extends State<GameScreen> {
                                   ),
                                   SizedBox(height: 20),
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       ElevatedButton(
                                         onPressed: () {
