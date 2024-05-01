@@ -1,4 +1,5 @@
 import 'package:emerg_proj/screen/coba.dart';
+import 'package:emerg_proj/screen/cobalagi.dart';
 import 'package:emerg_proj/screen/highscore.dart';
 import 'package:emerg_proj/screen/layar.dart';
 import 'package:emerg_proj/screen/login.dart';
