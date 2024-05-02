@@ -1,45 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-late Map<String, dynamic> _point;
-bool _isLoading = true;
-
-// void main() {
-//   //runApp(const MyApp());
-//   WidgetsFlutterBinding.ensureInitialized();
-//   checkPoint().then((int result) {
-//       pointNow = result;
-//     }
-//   );
-// }
 class HighScore extends StatefulWidget {
-  const HighScore({super.key});
+  const HighScore({Key? key}) : super(key: key);
 
   @override
   State<HighScore> createState() => _HighScoreState();
 }
 
 class _HighScoreState extends State<HighScore> {
-  List<Map<String, dynamic>> _leaderboard = [];
+  late List<Map<String, dynamic>> _leaderboard;
+
   @override
   void initState() {
     super.initState();
-    checkPoint().then((value) {
-      setState(() {
-        _point = value;
-        _isLoading = false;
-      });
-    });
+    _leaderboard = [];
+    _loadLeaderboard();
   }
 
-  Future<Map<String, dynamic>> checkPoint() async {
-    final prefs = await SharedPreferences.getInstance();
-    final user = prefs.getString('lastUsername') ?? "";
-    final point = prefs.getInt('highScore') ?? 0;
-    setState(() {
-      _leaderboard.add({'user': user, 'point': point});
-    });
-    return {'user': user, 'point': point};
+  void _loadLeaderboard() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? playerKeys = prefs.getStringList('playerKeys');
+
+    if (playerKeys != null) {
+      for (String key in playerKeys) {
+        String username = prefs.getString('$key:username') ?? '';
+        int score = prefs.getInt('$key:score') ?? 0;
+        _leaderboard.add({'username': username, 'score': score});
+      }
+      _leaderboard.sort((a, b) => b['score'].compareTo(a['score']));
+      _leaderboard = _leaderboard.take(3).toList();
+    }
+
+    setState(() {});
   }
 
   @override
@@ -49,30 +42,20 @@ class _HighScoreState extends State<HighScore> {
         title: Text('Leaderboard'),
       ),
       body: Center(
-        child: _isLoading
+        child: _leaderboard.isEmpty
             ? CircularProgressIndicator()
-            : SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: [
-                    DataColumn(
-                      label: Text("Name"),
+            : ListView.builder(
+                itemCount: _leaderboard.length,
+                itemBuilder: (context, index) {
+                  Map<String, dynamic> playerData = _leaderboard[index];
+                  return Card(
+                    child: ListTile(
+                      leading: Text((index + 1).toString()),
+                      title: Text(playerData['username'].toString()),
+                      trailing: Text(playerData['score'].toString()),
                     ),
-                    DataColumn(
-                      label: Text("High Score"),
-                    ),
-                  ],
-                  rows: _leaderboard
-                      .map(
-                        (score) => DataRow(
-                          cells: [
-                            DataCell(Text(score['user'])),
-                            DataCell(Text(score['point'].toString())),
-                          ],
-                        ),
-                      )
-                      .toList(),
-                ),
+                  );
+                },
               ),
       ),
     );

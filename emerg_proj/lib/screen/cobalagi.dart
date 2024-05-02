@@ -6,7 +6,7 @@ import 'package:emerg_proj/class/questionBank.dart';
 
 String _username = "";
 late int _score;
-late int _correctAnswerCount; // Jumlah jawaban benar
+late int _correctAnswerCount;
 
 class GameScreen extends StatefulWidget {
   @override
@@ -17,46 +17,47 @@ class _GameScreenState extends State<GameScreen> {
   late int _currentRound;
   late int _secondsRemaining;
   int _question_no = 0;
+  bool _isVisible = true;
   List<QuestionBank> _questions = [
     QuestionBank(
-      "https://picsum.photos/id/237/200/300",
-      'https://picsum.photos/id/237/200/300',
-      'https://picsum.photos/id/242/200/300',
-      'https://picsum.photos/id/243/200/300',
-      'https://picsum.photos/id/244/200/300',
-      'https://picsum.photos/id/237/200/300',
+      "assets/images/c-1-1.png",
+      "assets/images/c-1-2.png",
+      "assets/images/c-1-1.png",
+      "assets/images/c-1-3.png",
+      "assets/images/c-1-4.png",
+      "assets/images/c-1-1.png",
     ),
     QuestionBank(
-      "https://picsum.photos/id/238/200/300",
-      'https://picsum.photos/id/247/200/300',
-      'https://picsum.photos/id/263/200/300',
-      'https://picsum.photos/id/235/200/300',
-      'https://picsum.photos/id/238/200/300',
-      'https://picsum.photos/id/238/200/300',
+      "assets/images/c-2-3.png",
+      "assets/images/c-2-2.png",
+      "assets/images/c-2-3.png",
+      "assets/images/c-2-4.png",
+      "assets/images/c-2-1.png",
+      "assets/images/c-2-3.png",
     ),
     QuestionBank(
-      "https://picsum.photos/id/239/200/300",
-      'https://picsum.photos/id/260/200/300',
-      'https://picsum.photos/id/239/200/300',
-      'https://picsum.photos/id/261/200/300',
-      'https://picsum.photos/id/248/200/300',
-      'https://picsum.photos/id/239/200/300',
+      "assets/images/c-3-1.png",
+      "assets/images/c-3-4.png",
+      "assets/images/c-3-3.png",
+      "assets/images/c-3-1.png",
+      "assets/images/c-3-2.png",
+      "assets/images/c-3-1.png",
     ),
     QuestionBank(
-      "https://picsum.photos/id/240/200/300",
-      'https://picsum.photos/id/249/200/300',
-      'https://picsum.photos/id/250/200/300',
-      'https://picsum.photos/id/240/200/300',
-      'https://picsum.photos/id/251/200/300',
-      'https://picsum.photos/id/240/200/300',
+      "assets/images/c-4-3.png",
+      "assets/images/c-4-4.png",
+      "assets/images/c-4-3.png",
+      "assets/images/c-4-2.png",
+      "assets/images/c-4-1.png",
+      "assets/images/c-4-3.png",
     ),
     QuestionBank(
-      "https://picsum.photos/id/241/200/300",
-      'https://picsum.photos/id/252/200/300',
-      'https://picsum.photos/id/241/200/300',
-      'https://picsum.photos/id/253/200/300',
-      'https://picsum.photos/id/254/200/300',
-      'https://picsum.photos/id/241/200/300',
+      "assets/images/c-5-4.png",
+      "assets/images/c-5-3.png",
+      "assets/images/c-5-2.png",
+      "assets/images/c-5-1.png",
+      "assets/images/c-5-4.png",
+      "assets/images/c-5-4.png",
     ),
   ];
   late QuestionBank _currentQuestion;
@@ -79,10 +80,14 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _showImage() {
+    _isVisible = true;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (_secondsRemaining > 0) {
           _secondsRemaining--;
+          if (_secondsRemaining == 1) {
+          _isVisible = false;
+        }
         } else {
           _timer.cancel();
           if (_currentRound < _questions.length - 1) {
@@ -121,17 +126,59 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
+  // void _saveScore() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String? username = prefs.getString('user_id');
+  //   await prefs.setInt('highScore', _score);
+  //   await prefs.setInt('correctAnswerCount', _correctAnswerCount);
+  //   if (username != null) {
+  //     _username = username;
+  //   }
+  //   prefs.setString('lastUsername', _username);
+  //   Navigator.pushReplacement(
+  //     context,
+  //     MaterialPageRoute(
+  //         builder: (context) => Result(
+  //               score: _score,
+  //               correctAnswers: _correctAnswerCount,
+  //             )),
+  //   );
+  // }
   void _saveScore() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('highScore', _score);
-    await prefs.setInt('correctAnswerCount', _correctAnswerCount);
+
+    // Mendapatkan data pengguna terakhir (jika ada)
+    String? lastUsername = prefs.getString('user_id');
+    int currentHighScore = prefs.getInt('highScore') ?? 0;
+    List<String>? playerKeys = prefs.getStringList('playerKeys') ?? [];
+    int? existingPlayerIndex = playerKeys
+        .indexWhere((key) => prefs.getString('$key:username') == lastUsername);
+    if (existingPlayerIndex != -1) {
+      String existingPlayerKey = playerKeys[existingPlayerIndex];
+      int existingPlayerScore = prefs.getInt('$existingPlayerKey:score') ?? 0;
+      if (_score > existingPlayerScore) {
+        prefs.remove(existingPlayerKey);
+        prefs.setString('$existingPlayerKey:username', lastUsername ?? '');
+        prefs.setInt('$existingPlayerKey:score', _score);
+      }
+    } else {
+      String playerKey = DateTime.now().millisecondsSinceEpoch.toString();
+      prefs.setString('$playerKey:username', lastUsername ?? '');
+      prefs.setInt('$playerKey:score', _score);
+      playerKeys.add(playerKey);
+      prefs.setStringList('playerKeys', playerKeys);
+    }
+    if (_score > currentHighScore) {
+      await prefs.setInt('highScore', _score);
+    }
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (context) => Result(
-                score: _score,
-                correctAnswers: _correctAnswerCount,
-              )),
+        builder: (context) => Result(
+          score: _score,
+          correctAnswers: _correctAnswerCount,
+        ),
+      ),
     );
   }
 
@@ -155,11 +202,14 @@ class _GameScreenState extends State<GameScreen> {
                                 style: TextStyle(fontSize: 18),
                               ),
                               SizedBox(height: 20),
-                              Image.network(
-                                _currentQuestion.image,
-                                width: 200,
-                                height: 300,
-                              ),
+                              AnimatedOpacity(
+                                  opacity: _isVisible ? 1.0 : 0.0,
+                                  duration: Duration(milliseconds: 500),
+                                  child: Image.asset(
+                                    _currentQuestion.image,
+                                    width: 200,
+                                    height: 300,
+                                  )),
                               SizedBox(height: 10),
                               Text(
                                 '$_secondsRemaining seconds remaining',
@@ -185,7 +235,7 @@ class _GameScreenState extends State<GameScreen> {
                                         style: ElevatedButton.styleFrom(
                                           padding: EdgeInsets.zero,
                                         ),
-                                        child: Image.network(
+                                        child: Image.asset(
                                           _options[0],
                                           width: 100,
                                           height: 150,
@@ -200,7 +250,7 @@ class _GameScreenState extends State<GameScreen> {
                                         style: ElevatedButton.styleFrom(
                                           padding: EdgeInsets.zero,
                                         ),
-                                        child: Image.network(
+                                        child: Image.asset(
                                           _options[1],
                                           width: 100,
                                           height: 150,
@@ -220,7 +270,7 @@ class _GameScreenState extends State<GameScreen> {
                                         style: ElevatedButton.styleFrom(
                                           padding: EdgeInsets.zero,
                                         ),
-                                        child: Image.network(
+                                        child: Image.asset(
                                           _options[2],
                                           width: 100,
                                           height: 150,
@@ -235,7 +285,7 @@ class _GameScreenState extends State<GameScreen> {
                                         style: ElevatedButton.styleFrom(
                                           padding: EdgeInsets.zero,
                                         ),
-                                        child: Image.network(
+                                        child: Image.asset(
                                           _options[3],
                                           width: 100,
                                           height: 150,
