@@ -60,6 +60,7 @@ class _GameScreenState extends State<GameScreen> {
       "assets/images/c-5-4.png",
     ),
   ];
+  
   late QuestionBank _currentQuestion;
   late List<String> _options = [];
   late Timer _timer;
@@ -67,9 +68,10 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+    _questions.shuffle();
     _currentRound = 0;
     _score = 0;
-    _correctAnswerCount = 0; // Inisialisasi jumlah jawaban benar
+    _correctAnswerCount = 0;
     _startRound();
   }
 
@@ -125,29 +127,8 @@ class _GameScreenState extends State<GameScreen> {
       _saveScore();
     }
   }
-
-  // void _saveScore() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String? username = prefs.getString('user_id');
-  //   await prefs.setInt('highScore', _score);
-  //   await prefs.setInt('correctAnswerCount', _correctAnswerCount);
-  //   if (username != null) {
-  //     _username = username;
-  //   }
-  //   prefs.setString('lastUsername', _username);
-  //   Navigator.pushReplacement(
-  //     context,
-  //     MaterialPageRoute(
-  //         builder: (context) => Result(
-  //               score: _score,
-  //               correctAnswers: _correctAnswerCount,
-  //             )),
-  //   );
-  // }
   void _saveScore() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // Mendapatkan data pengguna terakhir (jika ada)
     String? lastUsername = prefs.getString('user_id');
     int currentHighScore = prefs.getInt('highScore') ?? 0;
     List<String>? playerKeys = prefs.getStringList('playerKeys') ?? [];

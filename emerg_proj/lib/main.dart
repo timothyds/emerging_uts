@@ -1,7 +1,5 @@
-import 'package:emerg_proj/screen/coba.dart';
 import 'package:emerg_proj/screen/cobalagi.dart';
 import 'package:emerg_proj/screen/highscore.dart';
-import 'package:emerg_proj/screen/layar.dart';
 import 'package:emerg_proj/screen/login.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -108,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Column(
         children: <Widget>[
           UserAccountsDrawerHeader(
-              accountName: Text("Timothy"),
+              accountName: Text(active_user),
               accountEmail: Text(active_user),
               currentAccountPicture: CircleAvatar(
                   backgroundImage: NetworkImage("https://i.pravatar.cc/150"))),

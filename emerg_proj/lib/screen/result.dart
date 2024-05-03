@@ -1,3 +1,4 @@
+import 'package:emerg_proj/main.dart';
 import 'package:emerg_proj/screen/cobalagi.dart';
 import 'package:emerg_proj/screen/highscore.dart';
 import 'package:flutter/material.dart';
@@ -74,15 +75,18 @@ class _ResultState extends State<Result> {
             SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context); // Close Result screen
-                Navigator.pop(context); // Close Game screen
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyHomePage(title: "Homepage",)),
+                );
               },
               child: Text('Main Menu'),
             ),
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context); // Close Result screen
+                Navigator.pop(context);
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => GameScreen()),
@@ -93,7 +97,7 @@ class _ResultState extends State<Result> {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context); // Close Result screen
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => HighScore()),
